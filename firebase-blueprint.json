@@ -1,0 +1,143 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile for Oga master, Apprentice, or Admin",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique user ID matching auth UID" },
+        "name": { "type": "string", "description": "Full name", "maxLength": 100 },
+        "email": { "type": "string", "description": "User email address", "maxLength": 150 },
+        "role": { "type": "string", "enum": ["OGA", "APPRENTICE", "ADMIN"], "description": "Role in the system" },
+        "balance": { "type": "number", "description": "AquaFlow wallet balance in NGN" },
+        "verified": { "type": "boolean", "description": "Whether user is verified" },
+        "businessName": { "type": "string", "description": "Business or trade enterprise name", "maxLength": 150 },
+        "skills": { "type": "array", "description": "Array of trade skills" },
+        "rating": { "type": "number", "description": "Average review rating" },
+        "hourlyRate": { "type": "number", "description": "Standard hourly rate" },
+        "location": { "type": "string", "description": "City or marketplace location", "maxLength": 150 },
+        "bio": { "type": "string", "description": "Profile biography", "maxLength": 500 },
+        "avatar": { "type": "string", "description": "Avatar URL", "maxLength": 500 }
+      },
+      "required": ["id", "name", "email", "role", "balance", "verified"]
+    },
+    "Course": {
+      "title": "Course",
+      "description": "Apprenticeship trade course offered by an Oga master",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique course ID" },
+        "ogaId": { "type": "string", "description": "UID of the Oga master" },
+        "ogaName": { "type": "string", "description": "Display name of the master", "maxLength": 100 },
+        "title": { "type": "string", "description": "Course title", "maxLength": 200 },
+        "description": { "type": "string", "description": "Detailed description of trade syllabus", "maxLength": 3000 },
+        "totalFee": { "type": "number", "description": "Total training fee in NGN" },
+        "location": { "type": "string", "description": "Workshop or market location", "maxLength": 150 },
+        "deliveryMode": { "type": "string", "enum": ["physical", "virtual", "hybrid"], "description": "Training mode" },
+        "meetingUrl": { "type": "string", "description": "Optional video meeting URL for virtual sessions", "maxLength": 500 },
+        "coverImage": { "type": "string", "description": "Cover photo URL", "maxLength": 500 },
+        "skillTags": { "type": "array", "description": "Associated trade skills" },
+        "milestones": { "type": "array", "description": "Payment milestones" },
+        "createdAt": { "type": "string", "description": "Creation timestamp" }
+      },
+      "required": ["id", "ogaId", "ogaName", "title", "description", "totalFee", "location", "deliveryMode", "skillTags", "milestones"]
+    },
+    "Enrollment": {
+      "title": "Enrollment",
+      "description": "Active or completed apprenticeship relationship between apprentice and master",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique enrollment ID" },
+        "courseId": { "type": "string", "description": "Enrolled course ID" },
+        "apprenticeId": { "type": "string", "description": "UID of the apprentice" },
+        "escrowBalance": { "type": "number", "description": "Funds remaining in escrow" },
+        "status": { "type": "string", "enum": ["active", "completed"], "description": "Enrollment status" },
+        "progress": { "type": "array", "description": "Milestone progression status array" },
+        "startDate": { "type": "string", "description": "Enrollment starting date" }
+      },
+      "required": ["id", "courseId", "apprenticeId", "escrowBalance", "status", "progress", "startDate"]
+    },
+    "ChatMessage": {
+      "title": "ChatMessage",
+      "description": "Direct communication between apprentice and master inside an enrollment",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique message ID" },
+        "enrollmentId": { "type": "string", "description": "Target enrollment ID" },
+        "senderId": { "type": "string", "description": "UID of the sender" },
+        "senderName": { "type": "string", "description": "Name of the sender", "maxLength": 100 },
+        "text": { "type": "string", "description": "Message text body", "maxLength": 2000 },
+        "timestamp": { "type": "string", "description": "ISO timestamp of the message" },
+        "isAdmin": { "type": "boolean", "description": "Whether sent by an admin" }
+      },
+      "required": ["id", "enrollmentId", "senderId", "senderName", "text", "timestamp"]
+    },
+    "Transaction": {
+      "title": "Transaction",
+      "description": "AquaFlow escrow and wallet financial log",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique transaction ID" },
+        "userId": { "type": "string", "description": "Account holder UID" },
+        "date": { "type": "string", "description": "Date string" },
+        "type": { "type": "string", "enum": ["deposit", "release", "trust_pool_fee", "withdrawal", "payment"] },
+        "amount": { "type": "number", "description": "Amount in NGN" },
+        "description": { "type": "string", "description": "Description of transaction", "maxLength": 300 },
+        "hash": { "type": "string", "description": "Transaction cryptographic hash", "maxLength": 100 },
+        "status": { "type": "string", "enum": ["success", "pending", "failed"] }
+      },
+      "required": ["id", "userId", "date", "type", "amount", "description", "hash", "status"]
+    },
+    "TradeCertificate": {
+      "title": "TradeCertificate",
+      "description": "Cryptographically verifiable digital graduation certificate for completed apprenticeships",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique certificate ID e.g. CERT-NG-2026-0842" },
+        "enrollmentId": { "type": "string", "description": "Referenced enrollment ID" },
+        "courseId": { "type": "string", "description": "Referenced course ID" },
+        "courseTitle": { "type": "string", "description": "Course title", "maxLength": 200 },
+        "apprenticeId": { "type": "string", "description": "Apprentice user ID" },
+        "apprenticeName": { "type": "string", "description": "Apprentice name", "maxLength": 100 },
+        "ogaId": { "type": "string", "description": "Oga Master user ID" },
+        "ogaName": { "type": "string", "description": "Oga Master name", "maxLength": 100 },
+        "tradeSkill": { "type": "string", "description": "Primary trade skill certified", "maxLength": 100 },
+        "issueDate": { "type": "string", "description": "Conferral date string" },
+        "verificationHash": { "type": "string", "description": "Cryptographic signature or verification hash" },
+        "masterBlessing": { "type": "string", "description": "Master's customary blessing and endorsement" },
+        "seedCapitalAmount": { "type": "number", "description": "Seed capital settlement sum in NGN" },
+        "equipmentGrant": { "type": "string", "description": "Handed-over tools and equipment grant" },
+        "status": { "type": "string", "enum": ["verified", "pending"] },
+        "grade": { "type": "string", "description": "Trade mastery honors grade" },
+        "guildSealNumber": { "type": "string", "description": "Official artisan guild seal number" }
+      },
+      "required": ["id", "enrollmentId", "courseId", "courseTitle", "apprenticeId", "apprenticeName", "ogaId", "ogaName", "tradeSkill", "issueDate", "verificationHash", "masterBlessing", "seedCapitalAmount", "equipmentGrant", "status", "grade", "guildSealNumber"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "User profiles containing wallet balance and trade credentials"
+    },
+    "/courses/{courseId}": {
+      "schema": { "$ref": "#/entities/Course" },
+      "description": "Apprenticeship catalog courses"
+    },
+    "/enrollments/{enrollmentId}": {
+      "schema": { "$ref": "#/entities/Enrollment" },
+      "description": "Active enrollments with milestone escrow tracking"
+    },
+    "/chats/{chatId}": {
+      "schema": { "$ref": "#/entities/ChatMessage" },
+      "description": "Real-time communication between master and apprentice"
+    },
+    "/transactions/{transactionId}": {
+      "schema": { "$ref": "#/entities/Transaction" },
+      "description": "Wallet and escrow financial transaction audit logs"
+    },
+    "/certificates/{certificateId}": {
+      "schema": { "$ref": "#/entities/TradeCertificate" },
+      "description": "Verifiable trade graduation certificates conferred upon settlement"
+    }
+  }
+}

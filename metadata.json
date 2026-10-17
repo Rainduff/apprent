@@ -1,0 +1,7 @@
+{
+  "name": "Nigerian Apprenticeship Platform",
+  "description": "A production-ready, mobile-first Apprenticeship platform combining LMS, Jobs Marketplace, and AquaFlow payments with AI utilities.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}

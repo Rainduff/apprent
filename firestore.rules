@@ -1,0 +1,82 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default-deny safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Global Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == 'itiwoak@gmail.com' ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    // Connection testing doc
+    match /test/{docId} {
+      allow read: if true;
+    }
+
+    // --- Users Collection ---
+    match /users/{userId} {
+      allow read: if true;
+      allow create, update: if isValidId(userId);
+      allow delete: if isAdmin();
+    }
+
+    // --- Courses Collection ---
+    match /courses/{courseId} {
+      allow read: if true;
+      allow create: if isValidId(courseId);
+      allow update, delete: if isValidId(courseId) && (isSignedIn() || isAdmin());
+    }
+
+    // --- Enrollments Collection ---
+    match /enrollments/{enrollmentId} {
+      allow read: if true;
+      allow create, update: if isValidId(enrollmentId);
+      allow delete: if isAdmin();
+    }
+
+    // --- Chat Messages Collection ---
+    match /chats/{chatId} {
+      allow read: if true;
+      allow create: if isValidId(chatId);
+      allow update, delete: if isAdmin();
+    }
+
+    // --- Transactions Collection ---
+    match /transactions/{transactionId} {
+      allow read: if true;
+      allow create: if isValidId(transactionId);
+      allow update, delete: if isAdmin();
+    }
+
+    // --- Certificates Collection ---
+    match /certificates/{certificateId} {
+      allow read: if true;
+      allow create, update: if isValidId(certificateId);
+      allow delete: if isAdmin();
+    }
+
+    // --- Trust Pool Balance ---
+    match /trust_pool/{docId} {
+      allow read: if true;
+      allow write: if true;
+    }
+  }
+}
